@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+## reachability - If I'm not on the net, hit it with a hammer!
+
+#
+## Configurable Variables
+#
+IPS="10.6.8.1 10.6.8.10 10.6.8.24 10.6.8.41"
+PINGS=10
+DEBUG=0
+
+#
+## No need to change anything below this point
+#
+IPCOUNT=0
+FAILS=0
+
+if [ "${DEBUG}" -eq "1" ]
+then
+    /bin/echo -e "IP\tFails"
+fi
+
+for IP in ${IPS}
+do
+    /bin/ping -c${PINGS} -q ${IP} 2>&1 >/dev/null || FAILS=$((FAILS+1))
+    IPCOUNT=$(( IPCOUNT+1 ))
+    if [ "${DEBUG}" -eq "1" ]
+    then
+        /bin/echo -e "${IPCOUNT}\t${FAILS}"
+    fi
+done
+
+if [ "${FAILS}" -eq "${IPCOUNT}" ]
+then
+    /sbin/reboot
+fi
+
+exit 0
+
+#EOF
